@@ -14,12 +14,14 @@ The dashboard shows a world map with the median data science salary of a country
 
 To populate our dashboard, the [Kaggle Data Scientists Salaries Around the World](https://www.kaggle.com/ikleiman/data-scientists-salaries-around-the-world) dataset by Iair Kleiman is used. Specifically, the files `conversionRates.csv` and `multipleChoiceResponses.csv` are used in this project. For details about data wrangling, please see [this repository](https://github.com/UBC-MDS/datasci_salaries_py).
 
-Contributing
+## Contributing
+
 Contributors: Artan Zandian, Joshua Sia, Siqi Tao, Wenjia Zhu (DSCI_532_GROUP19).
 
 Interested in contributing? Check out the contributing guidelines.
 
 Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
 
-License
+## License
+
 This dashboard was created by Artan Zandian, Joshua Sia, Siqi Tao, Wenjia Zhu (DSCI_532_GROUP19). It is licensed under the terms of the MIT license.
