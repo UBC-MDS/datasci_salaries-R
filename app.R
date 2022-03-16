@@ -98,7 +98,7 @@ sidebar = htmlDiv(
                         )
                     )
                 ),
-                htmlIframe(
+                dccGraph(
                     id="scatter",
                     # srcDoc=plot_13(DS_identity=['Yes', 'No', 'Sort of (Explain more)']),
                     style=list("border-width" = "0", "width" = "100%", "height" = "100vh")
@@ -214,7 +214,7 @@ content = dbcRow(
                     list(
                         dbcCol(
                             list(
-                                htmlIframe(
+                                dccGraph(
                                     id="gender-boxplot",
                                     style=list(
                                         "border-width" = "0",
@@ -228,7 +228,7 @@ content = dbcRow(
                         ),
                         dbcCol(
                             list(
-                                htmlIframe(
+                                dccGraph(
                                     id="edu_histogram",
                                     style=list(
                                         "border-width" = "0",
@@ -256,13 +256,13 @@ content = dbcRow(
 
 app$layout(
     htmlDiv(
-        c(
+        # c(
             list(
             # dccLocation(id="url", refresh=False),
             topbar,
             content
-            ),
-          sidebar
+          #   ),
+          # sidebar
          )
     )
 )
@@ -462,7 +462,7 @@ gender_box <- function(con) {
     
 app$callback(
     list(
-        output("scatter", "srcDoc")
+        output("scatter", "figure")
     ),
     list(
         input("data_scientist", "value")
@@ -496,7 +496,7 @@ app$callback(
 
 app$callback(
     list(
-        output('edu_histogram', 'children')#,
+        output('edu_histogram', 'figure')#,
         # output('salary', 'children'),
     ),
     list(
@@ -507,7 +507,7 @@ app$callback(
 
 app$callback(
     list(
-        output('gender-boxplot', 'children')
+        output('gender-boxplot', 'figure')
     ),
     list(
         input('select-country', 'value')
