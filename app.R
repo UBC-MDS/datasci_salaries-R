@@ -10,133 +10,18 @@ library(here)
 library(purrr)
 library(dplyr)
 
-plot_salary_heatmap <- function(xmax, xcon){
-  
-    source <- as.data.frame(df_salary) %>%
-            filter(Age > 0 & Salary_USD <= xmax[2])
+# import salaries data
 
-    if(is.null(xcon[[1]])){
-        xcon  <- "the World"
-    } else {
-        source  <- source %>%
-            filter(Country == xcon)
-    }
+df_salary <- readr::read_csv(here::here('data/processed', 'cleaned_salaries.csv'))
 
-    x_bin_num = max(as.integer((nrow(source)/6)^(0.65)), 6)
-    y_bin_num = max(as.integer((nrow(source)/6)^(0.65) / 2), 6)
+# import world map data
 
-    fig1 <- plot_ly(x = source$Age, y = source$Salary_USD) %>% 
-        add_histogram2d(colorscale="YlGnBu", nbinsx=x_bin_num, nbinsy=y_bin_num)
-
-
-    p <- ggplot(source,aes(x=Age)) +
-        geom_histogram(aes(y = ..density..), color="blue", fill = "blue", alpha = 0.2) +
-        geom_density(fill="blue", alpha = 0.2) +
-        theme_bw()
-        
-    fig2  <- ggplotly(p) 
-
-
-
-    fig <- subplot(
-        fig1,
-        fig2,
-        nrows = 2, 
-        margin = 0.04,
-        shareY = TRUE, 
-        titleX = TRUE
-    ) %>% layout(
-      height=350, 
-      width=450,
-      title = list(text=paste("Heatmap of ", xcon), font=list(size = 16)),
-      yaxis = list(title = 'Salary', font=list(size = 8)), 
-      legend = list(title=list(text='Counts'), font=list(size = 8))
-    )
-    
-    fig
-}
-
-plot_map <- function(xcon){
-
-    print(xcon)
-
-    df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv") %>%
+df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv") %>%
         select(COUNTRY, CODE)
-
-    source <- as.data.frame(df_salary) %>%
-        select(Country, Salary_USD)
-
-    source <- merge(source, df, by.x="Country", by.y="COUNTRY", all.y = TRUE) %>%
-        mutate(Salary_USD = coalesce(Salary_USD, 0)) %>%
-        group_by(Country, CODE) %>%
-        summarize(Salary_USD = round(median(Salary_USD, na.rm=TRUE), 2))  %>%
-        filter(Country !='antarctica')
-
-    l <- list(color = toRGB("grey"), width = 0.5)
-
-    g <- list(
-      showframe = FALSE,
-      showcoastlines = FALSE,
-      projection = list(type = 'Mercator'),
-      clickmode = 'event+select'
-    )
-
-    fig <- plot_geo(source)
-    fig <- fig %>% add_trace(
-        z = ~Salary_USD, color = ~Salary_USD, colors = 'Blues', height=1200, width=450, scope="north america",
-        text = ~Country, locations = ~CODE, marker = list(line = l)
-      ) %>%
-      layout(
-      title = 'Median Salary of the World<br>Source:<a href="https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv">Kaggle Dataset</a>',
-      geo = g#,
-      # dragmode = 'select'
-    )
-
-    fig
-}
-
-
-plot_edu_histo <- function(country) {
-
-    if (!is.null(country[[1]])) {
-      p <- data %>%
-        filter(Country == country)
-    }
-    else {
-      p <- data
-    }
-    p <- p %>%
-      drop_na(Salary_USD, Tenure, FormalEducation) %>%
-      filter(Tenure != "I don't write code to analyze data") %>%
-      mutate(
-        FormalEducation = case_when(
-          !(FormalEducation %in% education_order) ~ "Less than bachelor's degree",
-          TRUE ~ FormalEducation)) %>%
-      mutate(
-        FormalEducation = factor(
-          FormalEducation, levels = c(
-          "Less than bachelor's degree", education_order)
-          ),
-        Tenure = factor(Tenure, levels = tenure_order)
-        ) %>%
-      ggplot(aes(x = Salary_USD, fill = !!sym(stack))) +
-      geom_histogram(bins = 20, color = "white") +
-      scale_x_continuous(labels = scales::label_number_si()) +
-      labs(x = "Salary in USD", y = "Counts") +
-      theme_bw()
-
-
-    p <- p +
-      labs(fill = "Coding experience")
-
-
-    ggplotly(p)
-  }
-
 
 app <- Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
 
-df_salary <- readr::read_csv(here::here('data/processed', 'cleaned_salaries.csv'))
+# Define section styles
 
 SIDEBAR_STYLE = list(
     "position" = "fixed",
@@ -164,6 +49,8 @@ CONTENT_STYLE = list(
     "margin-right" = "3rem",
     "padding" = "0rem 0rem"
 )
+
+# define fection contents
 
 topbar = htmlDiv(
     list(
@@ -364,63 +251,268 @@ content = dbcRow(
     ),
     style=CONTENT_STYLE
 )
+    
+# Define dashborad layout
 
 app$layout(
     htmlDiv(
-        list(
+        c(
+            list(
             # dccLocation(id="url", refresh=False),
             topbar,
             content
-
-        )
+            ),
+          sidebar
+         )
     )
 )
+    
+# Plot functions
+    
+plot_sidebar <- function(DS_identity) {
+    # Clean data
+    data <- df_salary %>%
+      drop_na() %>%
+      dplyr::filter(Salary_USD < 400000) %>%
+      dplyr::filter(Tenure != "I don't write code to analyze data")
+    
+    data <- data %>%
+      dplyr::filter(DataScienceIdentitySelect %in% DS_identity)
+    
+    # Plot order
+    order_tenure <- c('More than 10 years', '6 to 10 years', '3 to 5 years', '1 to 2 years', 'Less than a year')
+    
+    # Create Plot
+    points <- data %>% ggplot(aes(
+      x = Salary_USD,
+      y = Country,
+      color = Tenure
+    )) + geom_point() +
+      labs(
+        title = "Salary distribution per country",
+        x = "Salary in USD",
+        y = "Country",
+        color = "Coding Experience"
+      ) +
+      scale_x_continuous(labels = scales::label_number_si())
+      # theme_dark()
+    
+    # bars <- data %>% ggplot(aes(
+    #   y = Tenure,
+    #   fill = Tenure
+    # )) + geom_bar() +
+    #   labs(
+    #     x = "Counts",
+    #     y = "Coding Experience"
+    #   ) +
+    #   theme(legend.position="none")
+    
+    
+    
+    ggplotly(points, tooltip = "EmployerIndustry")
+    
+    
+    # subplot(ggplotly(points, tooltip = "EmployerIndustry"),
+    #         bars,
+    #         nrows = 2,
+    #         heights = c(0.85, 0.15))
+  }
+    
 
-# app$callback(
-#     list(
-#         output("scatter", "srcDoc")
-#     ),
-#     list(
-#         input("data_scientist", "value")
-#     ),
-#     plot_sidebar(DS_identity)
-#     )
+plot_salary_heatmap <- function(xmax, xcon){
+  
+    source <- as.data.frame(df_salary) %>%
+            filter(Age > 0 & Salary_USD <= xmax[2])
 
-# app$callback(
-#     list(
-#         output("salary_heatmap", "figure")
-#     ),
-#     list(
-#         input("xslider_1", "value"), 
-#         input("select-country", "value")
-#     ),
-#     plot_salary_heatmap
+    if(is.null(xcon[[1]])){
+        xcon  <- "the World"
+    } else {
+        source  <- source %>%
+            filter(Country == xcon)
+    }
 
-# )
+    x_bin_num = max(as.integer((nrow(source)/6)^(0.65)), 6)
+    y_bin_num = max(as.integer((nrow(source)/6)^(0.65) / 2), 6)
+
+    fig1 <- plot_ly(x = source$Age, y = source$Salary_USD) %>% 
+        add_histogram2d(colorscale="YlGnBu", nbinsx=x_bin_num, nbinsy=y_bin_num)
+
+
+    p <- ggplot(source,aes(x=Age)) +
+        geom_histogram(aes(y = ..density..), color="blue", fill = "blue", alpha = 0.2) +
+        geom_density(fill="blue", alpha = 0.2) +
+        theme_bw()
+        
+    fig2  <- ggplotly(p) 
+
+
+
+    fig <- subplot(
+        fig1,
+        fig2,
+        nrows = 2, 
+        margin = 0.04,
+        shareY = TRUE, 
+        titleX = TRUE
+    ) %>% layout(
+      height=350, 
+      width=450,
+      title = list(text=paste("Heatmap of ", xcon), font=list(size = 16)),
+      yaxis = list(title = 'Salary', font=list(size = 8)), 
+      legend = list(title=list(text='Counts'), font=list(size = 8))
+    )
+    
+    fig
+}
+
+    
+plot_map <- function(xcon){
+
+    print(xcon)
+
+    df <- read.csv("https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv") %>%
+        select(COUNTRY, CODE)
+
+    source <- as.data.frame(df_salary) %>%
+        select(Country, Salary_USD)
+
+    source <- merge(source, df, by.x="Country", by.y="COUNTRY", all.y = TRUE) %>%
+        mutate(Salary_USD = coalesce(Salary_USD, 0)) %>%
+        group_by(Country, CODE) %>%
+        summarize(Salary_USD = round(median(Salary_USD, na.rm=TRUE), 2))  %>%
+        filter(Country !='antarctica')
+
+    l <- list(color = toRGB("grey"), width = 0.5)
+
+    g <- list(
+      showframe = FALSE,
+      showcoastlines = FALSE,
+      projection = list(type = 'Mercator'),
+      clickmode = 'event+select'
+    )
+
+    fig <- plot_geo(source)
+    fig <- fig %>% add_trace(
+        z = ~Salary_USD, color = ~Salary_USD, colors = 'Blues', height=1200, width=450, scope="north america",
+        text = ~Country, locations = ~CODE, marker = list(line = l)
+      ) %>%
+      layout(
+      title = 'Median Salary of the World<br>Source:<a href="https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv">Kaggle Dataset</a>',
+      geo = g#,
+      # dragmode = 'select'
+    )
+
+    fig
+}
+    
+plot_edu_histo <- function(country) {
+
+    if (!is.null(country[[1]])) {
+      p <- df_salary %>%
+        filter(Country == country)
+    }
+    else {
+      p <- df_salary
+    }
+    p <- p %>%
+      drop_na(Salary_USD, Tenure, FormalEducation) %>%
+      filter(Tenure != "I don't write code to analyze data") %>%
+      mutate(
+        FormalEducation = case_when(
+          !(FormalEducation %in% education_order) ~ "Less than bachelor's degree",
+          TRUE ~ FormalEducation)) %>%
+      mutate(
+        FormalEducation = factor(
+          FormalEducation, levels = c(
+          "Less than bachelor's degree", education_order)
+          ),
+        Tenure = factor(Tenure, levels = tenure_order)
+        ) %>%
+      ggplot(aes(x = Salary_USD, fill = !!sym(stack))) +
+      geom_histogram(bins = 20, color = "white") +
+      scale_x_continuous(labels = scales::label_number_si()) +
+      labs(x = "Salary in USD", y = "Counts") +
+      theme_bw()
+
+
+    p <- p +
+      labs(fill = "Formal education level")
+
+
+    ggplotly(p)
+  }
+    
+
+gender_box <- function(con) {
+        p <- df_salary %>%
+            mutate(GenderSelect = factor(GenderSelect)) %>%
+            filter(Country == con) %>%
+            ggplot(aes(y = Salary_USD,
+                       x = GenderSelect,
+                       fill = GenderSelect,
+                       text = GenderSelect)) +
+            geom_boxplot() +
+            coord_flip() +
+            theme(legend.position="none") +
+            ggthemes::scale_color_tableau() 
+        ggplotly(p)
+    }
+
+# Callback
+    
+app$callback(
+    list(
+        output("scatter", "srcDoc")
+    ),
+    list(
+        input("data_scientist", "value")
+    ),
+    plot_sidebar
+    )
+
+app$callback(
+    list(
+        output("salary_heatmap", "figure")
+    ),
+    list(
+        input("xslider_1", "value"), 
+        input("select-country", "value")
+    ),
+    plot_salary_heatmap
+
+)
 
 
 app$callback(
-  output('world_map', 'figure'),
-  list(input('select-country', 'value')),
-  plot_map
+    list(
+        output('world_map', 'figure')
+    ),
+    list(
+        input('select-country', 'value')
+    ),
+    plot_map
+)
+
+
+app$callback(
+    list(
+        output('edu_histogram', 'children')#,
+        # output('salary', 'children'),
+    ),
+    list(
+        input('select-country', 'value')
+    ),
+    plot_edu_histo
 )
 
 app$callback(
-  output('salary_heatmap', 'figure'),
-  list(input('xslider_1', 'value'), input('select-country', 'value')),
-  plot_salary_heatmap
+    list(
+        output('gender-boxplot', 'children')
+    ),
+    list(
+        input('select-country', 'value')
+    ),
+    gender_box
 )
-
-# app$callback(
-#     list(
-#         output('country', 'children')#,
-#         # output('salary', 'children'),
-#         ),
-#     list(input('world_map', 'selectedData')),
-#     function(selected_data) {
-#         print(toString(selected_data))
-#         list(toString(selected_data))
-#     }
-# )
 
 app$run_server(host = '0.0.0.0')
