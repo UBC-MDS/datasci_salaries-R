@@ -485,34 +485,19 @@ app$callback(
 
 app$callback(
     list(
-        output('world_map', 'figure')
-    ),
-    list(
-        input('select-country', 'value')
-    ),
-    plot_map
-)
-
-
-app$callback(
-    list(
-        output('edu_histogram', 'figure')#,
-        # output('salary', 'children'),
-    ),
-    list(
-        input('select-country', 'value')
-    ),
-    plot_edu_histo
-)
-
-app$callback(
-    list(
+        output('world_map', 'figure'),
+        output('edu_histogram', 'figure'),
         output('gender-boxplot', 'figure')
     ),
     list(
         input('select-country', 'value')
     ),
-    gender_box
+    list(
+        plot_map,
+        plot_edu_histo,
+        gender_box
+    )
 )
+
 
 app$run_server(host = '0.0.0.0')
