@@ -154,118 +154,117 @@ sidebar = htmlDiv(
     style=SIDEBAR_STYLE
 )
 
-# content = dbcRow(
-#     list(
-#         dbcCol(
-#             list(
-#                 dbcRow(
-#                     dbcCol(
-#                         # list(
-#                         con_dropdown
-#                         # )
-#                         ,
-#                         width=6,
-#                         style=list("height" = "3vh")
-#                     ),
-#                     style=list("height" = "3vh")
-#                 ),
-#                 dbcRow(
-#                     list(
-#                         dbcCol(
-#                             list(
-#                                 htmlIframe(
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "10vh"
-#                                     )
-#                                 ),
-#                                 dccGraph(
-#                                     id="world_map",
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "45vh"
-#                                     )
-#                                 )
+content = dbcRow(
+    list(
+        dbcCol(
+            list(
+                dbcRow(
+                    dbcCol(
+                        list(con_dropdown),
+                        width=6,
+                        style=list("height" = "3vh")
+                    ),
+                    style=list("height" = "3vh")
+                ),
+                dbcRow(
+                    list(
+                        dbcCol(
+                            list(
+                                htmlIframe(
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "10vh"
+                                    )
+                                ),
+                                dccGraph(
+                                    id="world_map",
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "45vh"
+                                    )
+                                )
+                            ),
 
-#                                        ),
-
-#                                 htmlIframe(
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "10vh"
-#                                     )
-#                                 )
+                                htmlIframe(
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "10vh"
+                                    )
+                                )
           
-#                             ),
-#                             width=6
-#                         ),
+                            ),
+                            width=6
+                        ),
                         
 
-#                         dbcCol(
-#                             list(
-#                                 htmlH2("Select a salary range:",                             
-#                                         style=list("color" = "black", "font-size" = "12px")
-#                                         ),
-#                                 slider,
-#                                 dccGraph(
-#                                     id="salary_heatmap",
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "52vh"
-#                                     )
-#                                 )
-#                             ),
-#                             width=5
-#                         )
-#                     )
-#                 ),
-#                 dbcRow(
-#                     list(
-#                         dbcCol(
-#                             list(
-#                                 dccGraph(
-#                                     id="gender-boxplot",
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "32vh",
-#                                         "display" = "block"
-#                                     )
-#                                 )
-#                             ),
-#                             width=6
-#                         ),
-#                         dbcCol(
-#                             list(
-#                                 dccGraph(
-#                                     id="edu_histogram",
-#                                     style=list(
-#                                         "border-width" = "0",
-#                                         "width" = "100%",
-#                                         "height" = "32vh"
-#                                     )
-#                                 )
-#                             ),
-#                             width=5
-#                         )
-#                     )
-#                 )
-#             )
-#         ),
+                        dbcCol(
+                            list(
+                                htmlH2("Select a salary range:",                             
+                                        style=list("color" = "black", "font-size" = "12px")
+                                        ),
+                                slider,
+                                dccGraph(
+                                    id="salary_heatmap",
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "52vh"
+                                    )
+                                )
+                            ),
+                            width=5
+                        )
+                    )
+                ),
+                dbcRow(
+                    list(
+                        dbcCol(
+                            list(
+                                dccGraph(
+                                    id="gender-boxplot",
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "32vh",
+                                        "display" = "block"
+                                    )
+                                )
+                            ),
+                            width=6
+                        ),
+                        dbcCol(
+                            list(
+                                dccGraph(
+                                    id="edu_histogram",
+                                    style=list(
+                                        "border-width" = "0",
+                                        "width" = "100%",
+                                        "height" = "32vh"
+                                    )
+                                )
+                            ),
+                            width=5
+                        )
+                    )
+                )
+            )
+        ),
         
-#         dbcCol(
-#             list(sidebar),
-#             width=3
-#         ),
-#     style=CONTENT_STYLE
-# )
+        # dbcCol(
+        #     list(sidebar),
+        #     width=3
+        # ),
+    style=CONTENT_STYLE
+)
+    
     
 # Set layout
 
+# The layout below is ugly but works!
+    
 # app$layout(
 #     dbcContainer(
 #         list(
@@ -286,39 +285,70 @@ sidebar = htmlDiv(
 #             dccGraph(id='edu_histogram'),
 #             dccGraph(id='gender-boxplot'),
 #             dccGraph(id='scatter'),
-#             scientist
+#             scientist,
+#             edu_dropdown
+#         )
+#     )
+# )
+    
+
+# app$layout(
+#     dbcContainer(
+#         dbcRow(
+#             list(
+#                 dbcCol(
+#                     list(
+#                         htmlH2("Data Science Salaries Dashboard", style = TOPBAR_STYLE),
+#                         dbcRow(
+#                             list(
+#                                 dbcCol(
+#                                     ##### 3
+#                                     list(
+#                                         con_dropdown,
+#                                         dccGraph(id='world_map'),
+#                                         # 5 countries,
+#                                         dccGraph(id='gender-boxplot')
+#                                         )
+#                                 ),
+#                                 dbcCol(
+#                                     ##### 4
+#                                     list(
+#                                         slider,
+#                                         dccGraph(id="salary_heatmap"),
+#                                         edu_dropdown,
+#                                         dccGraph(id='edu_histogram')
+#                                         )
+#                                 )
+#                             )
+#                         )
+#                     )
+#                 ),
+#                 dbcCol(
+#                     ##### 2
+#                     list(
+#                         htmlH2("Are you a Data Scientist?", style=list("color" = "white", "font-size" = "14px")),
+#                         scientist,
+#                         dccGraph(id='scatter')
+#                     )
+                    
+#                 )
+#             )
 #         )
 #     )
 # )
 
 app$layout(
-    dbcContainer(
-        list(
-            htmlH2(
-                "Data Science Salaries Dashboard",
-                style = 
-                # list(
-                #     "color" = "white",
-                #     "font-size" = "20px",
-                #     "text-align" = "center"
-                # ) 
-                TOPBAR_STYLE
-            ),
-            con_dropdown,
-            slider,
-            dccGraph(id='world_map'),
-            dccGraph(id="salary_heatmap"),
-            dccGraph(id='edu_histogram'),
-            dccGraph(id='gender-boxplot'),
-            dccGraph(id='scatter'),
-            scientist,
-            edu_dropdown
-        )
+    htmlDiv(
+        # c(
+            list(
+            # dccLocation(id="url", refresh=False),
+            topbar,
+            content
+          #   ),
+          # sidebar
+         )
     )
 )
-    
-
-
 
 # Callback
     
@@ -533,14 +563,9 @@ app$callback(
                 theme(legend.position="none") #+
                 # ggthemes::scale_color_tableau()
             
-            ggplotly(p)# %>% layout(
-                # height=350, 
-                # width=450,
-                # title = list(text=paste("Boxplot of ", con), font=list(size = 16))#,
-                # legend = list(title=list(text='Counts'), font=list(size = 8))
-                # )
+            ggplotly(p)
         }
 )
 
 app$run_server(host = '0.0.0.0')
-# app$run_server(debug = T)
+# app$run_server(debug = F)
