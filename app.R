@@ -157,7 +157,7 @@ sidebar = htmlDiv(
         dccGraph(
           id="scatter",
           # srcDoc=plot_13(DS_identity=['Yes', 'No', 'Sort of (Explain more)']),
-          style=list("border-width" = "0", "width" = "100%", "height" = "100vh")
+          style=list("border-width" = "0", "width" = "100%", "height" = "90vh")
         )
       )
     )
