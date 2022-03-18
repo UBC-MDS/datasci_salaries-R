@@ -96,9 +96,9 @@ slider <- dccRangeSlider(
 scientist <- dccDropdown(
   id="data_scientist",
   options=list(
-    list("label" = "Yes", "value" = "Yes"),
-    list("label" = "No", "value" = "No"),
-    list("label" = "Sort of", "value" = "Sort of (Explain more)")
+    list("label" = "Data Scientist", "value" = "Yes"),
+    list("label" = "Not Data Scientist", "value" = "No"),
+    list("label" = "Mixed", "value" = "Sort of (Explain more)")
   ),
   value=list("Yes", "No", "Sort of (Explain more)"),
   style=list("font-size" = "12px", "height" = "3vh"),
@@ -147,7 +147,7 @@ sidebar = htmlDiv(
         htmlDiv(
           list(
             htmlH2(
-              "Are you a Data Scientist?",
+              "Type of role",
               style=list("color" = "white", "font-size" = "14px")
             )
             ,
@@ -157,7 +157,7 @@ sidebar = htmlDiv(
         dccGraph(
           id="scatter",
           # srcDoc=plot_13(DS_identity=['Yes', 'No', 'Sort of (Explain more)']),
-          style=list("border-width" = "0", "width" = "100%", "height" = "100vh")
+          style=list("border-width" = "0", "width" = "100%", "height" = "90vh")
         )
       )
     )
@@ -293,8 +293,6 @@ app$callback(
     # Plot order
     order_tenure <- c('More than 10 years', '6 to 10 years', '3 to 5 years', '1 to 2 years', 'Less than a year')
     
-<<<<<<< Updated upstream
-=======
     # median order
     med_order <- data %>%
       group_by(Country) %>%
@@ -305,8 +303,6 @@ app$callback(
     
     data$Country <- factor(data$Country,  # Change ordering manually
                            levels = med_order)
-    
->>>>>>> Stashed changes
     # Create Plot
     points <- data %>% ggplot(aes(
       x = Salary_USD,
@@ -314,7 +310,7 @@ app$callback(
       color = Tenure
     )) + geom_point() +
       labs(
-        title = "Salary distribution per country",
+        title = "Salary distribution",
         x = "Salary in USD",
         y = "Country",
         color = "Coding Experience"
@@ -324,7 +320,7 @@ app$callback(
       theme_bw() +
       theme(text = element_text(size = 10))
     
-    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.2, y = 0.9))
+    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.4, y = 0.95))
     
   }
 )
