@@ -338,7 +338,8 @@ app$callback(
       ) +
       scale_x_continuous(labels = scales::label_number_si())+
       guides(fill=guide_legend(nrow=3,byrow=TRUE))  + 
-      theme_bw()
+      theme_bw() +
+      theme(text = element_text(size = 12))
     
     ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.2, y = 0.9))
     
@@ -372,7 +373,9 @@ app$callback(
     p <- ggplot(source,aes(x=Age)) +
       geom_histogram(aes(y = ..density..), color="blue", fill = "blue", alpha = 0.2) +
       geom_density(fill="blue", alpha = 0.2) +
-      theme_bw()
+      labs(y = "Density") +
+      theme_bw() +
+      theme(text = element_text(size = 12))
     
     fig2  <- ggplotly(p) 
     
@@ -388,7 +391,7 @@ app$callback(
     ) %>% layout(
       height=350, 
       width=450,
-      title = list(text=paste("Heatmap of ", xcon), font=list(size = 16)),
+      title = list(text=paste0("Heatmap of ", xcon), font=list(size = 16)),
       yaxis = list(title = 'Salary', font=list(size = 8)), 
       legend = list(title=list(text='Counts'), font=list(size = 8))
     )
@@ -480,9 +483,10 @@ app$callback(
       ggplot(aes(x = Salary_USD, fill = !!sym(stack))) +
       geom_histogram(bins = 20, color = "white") +
       scale_x_continuous(labels = scales::label_number_si()) +
-      labs(x = "Salary in USD", y = "Counts") +
-      theme(legend.title=element_blank()) +
-      theme_bw()
+      labs(x = "Salary in USD", y = "Counts", fill = "") +
+      theme_bw() +
+      theme(text = element_text(size = 12)) +
+      guides(fill=guide_legend(title=""))
     
     if (stack == "Tenure") {
       p <- p +
@@ -494,7 +498,7 @@ app$callback(
     }
     
     ggplotly(p) %>% 
-      layout(legend = list(orientation = "h", x = 0, y =-0.4))
+      layout(legend = list(orientation = "h", x = -0.1, y =-0.6))
   }
 )
 
@@ -531,7 +535,8 @@ app$callback(
       ylab("Salary in USD") +
       coord_flip() +
       theme(legend.position="none") + 
-      theme_bw()
+      theme_bw() +
+      theme(text = element_text(size = 12))
     
     ggplotly(p) %>% hide_legend()
   }
