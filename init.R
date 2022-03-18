@@ -10,7 +10,7 @@ options(repos=r)
 
 # packages go here
 install.packages(
-  c('dash', 'readr', 'here', 'ggthemes', 'remotes',
+  c('dash', 'readr', 'here', 'ggthemes', 'remotes', 'tidyr',
     'ggplot2', 'plotly', 'purrr', 'readr', 'dplyr', 'dashHtmlComponents')
   )
 
