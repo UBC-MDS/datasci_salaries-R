@@ -269,6 +269,9 @@ content = dbcRow(
             ),
             dbcCol(
               list(
+                htmlH2("Select a feature to stack by:",                             
+                       style=list("color" = "black", "font-size" = "12px")
+                ),
                 edu_dropdown,
                 dccGraph(
                   id="edu_histogram",
