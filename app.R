@@ -85,7 +85,8 @@ slider <- dccRangeSlider(
         "150000"="150K", "200000"="200K", "250000"="250K",
         "300000"="300K", "350000"="350K", "400000"="400K",
         "450000"="450K", "500000"="500K", "550000"="550K"
-            )
+            ),
+    allowCross= FALSE
     )
     
 scientist <- dccDropdown(
@@ -160,7 +161,19 @@ content = dbcRow(
             list(
                 dbcRow(
                     dbcCol(
-                        list(con_dropdown),
+                        list(
+                            dccDropdown(
+                                id="select-country",
+                                placeholder='Please select a country',
+                                value=NULL,
+                                options=df_salary %>%
+                                        arrange(Country) %>%
+                                        pull(Country) %>%
+                                        unique %>%
+                                        purrr::map(function(country) list(label = country,
+                                                                            value = country))
+                            )
+                        ),
                         width=6,
                         style=list("height" = "3vh")
                     ),
@@ -184,8 +197,18 @@ content = dbcRow(
                                         "width" = "100%",
                                         "height" = "45vh"
                                     )
-                                )
-                            ),
+                                ),
+
+                                # htmlDiv(
+                                #     "Country:",   
+                                #     id="country",                      
+                                #     style=list("color" = "black", "font-size" = "12px")
+                                #         ),
+                                # htmlDiv(
+                                #     "Salary:",
+                                #     id="salary",                        
+                                #     style=list("color" = "black", "font-size" = "12px")
+                                #         ),
 
                                 htmlIframe(
                                     style=list(
@@ -205,7 +228,19 @@ content = dbcRow(
                                 htmlH2("Select a salary range:",                             
                                         style=list("color" = "black", "font-size" = "12px")
                                         ),
-                                slider,
+                                dccRangeSlider(
+                                    id="xslider_1",
+                                    min=0,
+                                    max=500000,
+                                    value=list(0, 500000),
+                                    marks=list(
+                                            "0"="0K", "50000"="50K", "100000"="100K",
+                                            "150000"="150K", "200000"="200K", "250000"="250K",
+                                            "300000"="300K", "350000"="350K", "400000"="400K",
+                                            "450000"="450K", "500000"="500K", "550000"="550K"
+                                        )
+                                ),
+                                
                                 dccGraph(
                                     id="salary_heatmap",
                                     style=list(
@@ -237,6 +272,7 @@ content = dbcRow(
                         ),
                         dbcCol(
                             list(
+                                edu_dropdown,
                                 dccGraph(
                                     id="edu_histogram",
                                     style=list(
@@ -253,100 +289,22 @@ content = dbcRow(
             )
         ),
         
-        # dbcCol(
-        #     list(sidebar),
-        #     width=3
-        # ),
+        dbcCol(
+            list(sidebar),
+            width=3
+        )
+    ),
     style=CONTENT_STYLE
 )
     
-    
 # Set layout
-
-# The layout below is ugly but works!
-    
-# app$layout(
-#     dbcContainer(
-#         list(
-#             htmlH2(
-#                 "Data Science Salaries Dashboard",
-#                 style = 
-#                 # list(
-#                 #     "color" = "white",
-#                 #     "font-size" = "20px",
-#                 #     "text-align" = "center"
-#                 # ) 
-#                 TOPBAR_STYLE
-#             ),
-#             con_dropdown,
-#             slider,
-#             dccGraph(id='world_map'),
-#             dccGraph(id="salary_heatmap"),
-#             dccGraph(id='edu_histogram'),
-#             dccGraph(id='gender-boxplot'),
-#             dccGraph(id='scatter'),
-#             scientist,
-#             edu_dropdown
-#         )
-#     )
-# )
-    
-
-# app$layout(
-#     dbcContainer(
-#         dbcRow(
-#             list(
-#                 dbcCol(
-#                     list(
-#                         htmlH2("Data Science Salaries Dashboard", style = TOPBAR_STYLE),
-#                         dbcRow(
-#                             list(
-#                                 dbcCol(
-#                                     ##### 3
-#                                     list(
-#                                         con_dropdown,
-#                                         dccGraph(id='world_map'),
-#                                         # 5 countries,
-#                                         dccGraph(id='gender-boxplot')
-#                                         )
-#                                 ),
-#                                 dbcCol(
-#                                     ##### 4
-#                                     list(
-#                                         slider,
-#                                         dccGraph(id="salary_heatmap"),
-#                                         edu_dropdown,
-#                                         dccGraph(id='edu_histogram')
-#                                         )
-#                                 )
-#                             )
-#                         )
-#                     )
-#                 ),
-#                 dbcCol(
-#                     ##### 2
-#                     list(
-#                         htmlH2("Are you a Data Scientist?", style=list("color" = "white", "font-size" = "14px")),
-#                         scientist,
-#                         dccGraph(id='scatter')
-#                     )
-                    
-#                 )
-#             )
-#         )
-#     )
-# )
 
 app$layout(
     htmlDiv(
-        # c(
-            list(
-            # dccLocation(id="url", refresh=False),
+        list(
             topbar,
             content
-          #   ),
-          # sidebar
-         )
+        )
     )
 )
 
@@ -382,9 +340,11 @@ app$callback(
             y = "Country",
             color = "Coding Experience"
           ) +
-          scale_x_continuous(labels = scales::label_number_si())
+          scale_x_continuous(labels = scales::label_number_si())+
+        guides(fill=guide_legend(nrow=3,byrow=TRUE))  + 
+        theme_bw()
 
-        ggplotly(points, tooltip = "EmployerIndustry")
+        ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.2, y = 0.9))
     
     }
 )
@@ -493,9 +453,10 @@ app$callback(
     output('edu_histogram', 'figure'),
     list(
         input('select-country', 'value'),
-        input("stack-select", "value")
+        input("stack-select", "value"),
+        input("xslider_1", "value")
     ),
-    function(country, stack) {
+    function(country, stack, xmax) {
 
         if (!is.null(country[[1]])) {
           p <- df_salary %>%
@@ -504,6 +465,9 @@ app$callback(
         else {
           p <- df_salary
         }
+        
+        p <- filter(p, Age > 0, Salary_USD <= xmax[2], Salary_USD >= xmax[1])
+        
         p <- p %>%
           drop_na(Salary_USD, Tenure, FormalEducation) %>%
           filter(Tenure != "I don't write code to analyze data") %>%
@@ -521,27 +485,30 @@ app$callback(
           geom_histogram(bins = 20, color = "white") +
           scale_x_continuous(labels = scales::label_number_si()) +
           labs(x = "Salary in USD", y = "Counts") +
+          theme(legend.title=element_blank()) +
           theme_bw()
 
         if (stack == "Tenure") {
           p <- p +
-            labs(fill = "Coding experience")
+            labs(fill = "Coding experience") 
         }
         else {
           p <- p +
             labs(fill = "Formal education level")
         }
 
-        ggplotly(p)
+        ggplotly(p) %>% 
+            layout(legend = list(orientation = "h", x = 0, y =-0.4))
       }
 )
 
 app$callback(
     output('gender-boxplot', 'figure'),
     list(
-        input('select-country', 'value')
+        input('select-country', 'value'),
+        input("xslider_1", "value")
     ),
-    function(con) {
+    function(con, xmax) {
         if (!is.null(con[[1]])) {
             p <- as.data.frame(df_salary) %>%
             filter(Country == con)
@@ -550,6 +517,9 @@ app$callback(
             p <- as.data.frame(df_salary)
         }
             
+        p <- p %>% drop_na() 
+        p <- filter(p, Age > 0, Salary_USD <= xmax[2], Salary_USD >= xmax[1])
+        
         p$GenderSelect[(p$GenderSelect != 'Male')&(p$GenderSelect != 'Female') & (p$GenderSelect != 'A different identity')] <- 'Other'
 
         p <- p %>%
@@ -558,14 +528,17 @@ app$callback(
                         x = GenderSelect,
                            fill = GenderSelect,
                            text = GenderSelect)) +
-                geom_boxplot() +
-                coord_flip() +
-                theme(legend.position="none") #+
-                # ggthemes::scale_color_tableau()
+            geom_boxplot() +
             
-            ggplotly(p)
+            scale_y_continuous(labels = scales::label_number_si()) +
+            xlab("Gender") +
+            ylab("Salary in USD") +
+            coord_flip() +
+            theme(legend.position="none") + 
+            theme_bw()
+            
+            ggplotly(p) %>% hide_legend()
         }
 )
 
 app$run_server(host = '0.0.0.0')
-# app$run_server(debug = F)
