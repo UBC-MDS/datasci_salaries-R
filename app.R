@@ -229,6 +229,9 @@ content = dbcRow(
                 dbcRow(
                     dbcCol(
                         list(
+                          htmlH2(" ",                             
+                                 style=list("height" = "2vh")
+                          ),
                             dccDropdown(
                                 id="select-country",
                                 placeholder='Please select a country',
@@ -239,6 +242,24 @@ content = dbcRow(
                                         unique %>%
                                         purrr::map(function(country) list(label = country,
                                                                             value = country))
+                            ),
+                          htmlH2(" ",                             
+                                 style=list("height" = "1vh")
+                          ),
+                            htmlH2("Zoom in on a salary range:",                             
+                                   style=list("color" = "black", "font-size" = "12px")
+                            ),
+                            dccRangeSlider(
+                              id="xslider_1",
+                              min=0,
+                              max=500000,
+                              value=list(0, 500000),
+                              marks=list(
+                                "0"="0K", "50000"="50K", "100000"="100K",
+                                "150000"="150K", "200000"="200K", "250000"="250K",
+                                "300000"="300K", "350000"="350K", "400000"="400K",
+                                "450000"="450K", "500000"="500K", "550000"="550K"
+                              )
                             )
                         ),
                         width=6,
@@ -254,7 +275,7 @@ content = dbcRow(
                                     style=list(
                                         "border-width" = "0",
                                         "width" = "100%",
-                                        "height" = "10vh"
+                                        "height" = "16vh"
                                     )
                                 ),
                                 dccGraph(
@@ -293,22 +314,6 @@ content = dbcRow(
 
                         dbcCol(
                             list(
-                                htmlH2("Select a salary range:",                             
-                                        style=list("color" = "black", "font-size" = "12px")
-                                        ),
-                                dccRangeSlider(
-                                    id="xslider_1",
-                                    min=0,
-                                    max=500000,
-                                    value=list(0, 500000),
-                                    marks=list(
-                                            "0"="0K", "50000"="50K", "100000"="100K",
-                                            "150000"="150K", "200000"="200K", "250000"="250K",
-                                            "300000"="300K", "350000"="350K", "400000"="400K",
-                                            "450000"="450K", "500000"="500K", "550000"="550K"
-                                        )
-                                ),
-                                
                                 dccGraph(
                                     id="salary_heatmap",
                                     figure=plot_salary_heatmap(list(0,550000), NULL),
@@ -423,4 +428,5 @@ app$callback(
 #     }
 # )
 
-app$run_server(host = '0.0.0.0')
+# app$run_server(host = '0.0.0.0')
+app$run_server(debug = T)
