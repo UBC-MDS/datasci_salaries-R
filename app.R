@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 library(dash)
 library(dashCoreComponents)
 library(dashHtmlComponents)
@@ -287,6 +288,12 @@ app$callback(
     # Plot order
     order_tenure <- c('More than 10 years', '6 to 10 years', '3 to 5 years', '1 to 2 years', 'Less than a year')
     
+    # median order
+    med_order <- data |> group_by(Country) |> summarize(med = median(Salary_USD)) |> 
+      arrange(desc(med)) |> select(Country) |> pull()
+    data$Country <- factor(data$Country,  # Change ordering manually
+                           levels = med_order)
+    
     # Create Plot
     points <- data %>% ggplot(aes(
       x = Salary_USD,
@@ -294,7 +301,7 @@ app$callback(
       color = Tenure
     )) + geom_point() +
       labs(
-        title = "Salary distribution per country",
+        title = "Salary distribution",
         x = "Salary in USD",
         y = "Country",
         color = "Coding Experience"
@@ -304,7 +311,7 @@ app$callback(
       theme_bw() +
       theme(text = element_text(size = 10))
     
-    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.2, y = 0.9))
+    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.3, y = 0.9))
     
   }
 )
