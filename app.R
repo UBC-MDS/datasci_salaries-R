@@ -294,11 +294,15 @@ app$callback(
     order_tenure <- c('More than 10 years', '6 to 10 years', '3 to 5 years', '1 to 2 years', 'Less than a year')
     
     # median order
-    med_order <- data |> group_by(Country) |> summarize(med = median(Salary_USD)) |> 
-      arrange(desc(med)) |> select(Country) |> pull()
+    med_order <- data %>%
+      group_by(Country) %>%
+      summarize(med = median(Salary_USD)) %>%
+      arrange(desc(med)) %>%
+      select(Country) %>%
+      pull()
+    
     data$Country <- factor(data$Country,  # Change ordering manually
                            levels = med_order)
-    
     # Create Plot
     points <- data %>% ggplot(aes(
       x = Salary_USD,
