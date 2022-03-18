@@ -9,11 +9,10 @@ library(readr)
 library(here)
 library(purrr)
 library(dplyr)
-library(tidyverse)
 
 # import salaries data
 
-df_salary <- readr::read_csv('cleaned_salaries.csv')
+df_salary <- read_csv(here("data", "processed", "cleaned_salaries.csv"))
 
 
 education_order <- c(
@@ -62,7 +61,7 @@ CONTENT_STYLE = list(
     "padding" = "0rem 0rem"
 )
 
-# Define widges
+# Define widgets
 
 con_dropdown <- dccDropdown(
     id="select-country",
@@ -319,7 +318,6 @@ app$callback(
         # Clean data
         data <- df_salary %>%
           drop_na() %>%
-          dplyr::filter(Salary_USD < 400000) %>%
           dplyr::filter(Tenure != "I don't write code to analyze data")
 
         data <- data %>%
@@ -357,7 +355,7 @@ app$callback(
     ),
     function(xmax, xcon){
         source <- as.data.frame(df_salary) %>%
-            filter(Age > 0 & Salary_USD <= xmax[2])
+            filter(Age > 0, Salary_USD <= xmax[2], Salary_USD >= xmax[1])
 
         if(is.null(xcon[[1]])){
             xcon  <- "the World"
