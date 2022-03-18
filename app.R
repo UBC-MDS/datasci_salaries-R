@@ -160,100 +160,56 @@ content = dbcRow(
     dbcCol(
       list(
         dbcRow(
-          dbcCol(
-            list(
-              htmlH2(" ",                             
-                     style=list("height" = "2vh")
-              ),
-              dccDropdown(
-                id="select-country",
-                placeholder='Please select a country',
-                value=NULL,
-                options=df_salary %>%
-                  arrange(Country) %>%
-                  pull(Country) %>%
-                  unique %>%
-                  purrr::map(function(country) list(label = country,
-                                                    value = country))
-              ),
-              htmlH2(" ",                             
-                     style=list("height" = "1vh")
-              ),
-              htmlH2("Zoom in on a salary range:",                             
-                     style=list("color" = "black", "font-size" = "12px")
-              ),
-              slider
-            ),
-            width=6,
-            style=list("height" = "3vh")
-          ),
-          style=list("height" = "3vh")
-        ),
-        dbcRow(
           list(
             dbcCol(
+              # World map + widgets
               list(
-                htmlIframe(
-                  style=list(
-                    "border-width" = "0",
-                    "width" = "100%",
-                    "height" = "16vh"
-                  )
+                htmlH2(" ",                             
+                       style=list("height" = "0.5vh")
+                ),
+                con_dropdown,
+                htmlH2(" ",                             
+                       style=list("height" = "1vh")
+                ),
+                htmlH2("Zoom in on a salary range:",                             
+                       style=list("color" = "black", "font-size" = "12px")
+                ),
+                slider,
+                htmlH2(" ",                             
+                       style=list("height" = "1vh")
                 ),
                 dccGraph(
                   id="world_map",
                   style=list(
                     "border-width" = "0",
                     "width" = "100%",
-                    "height" = "45vh"
-                  )
-                ),
-                
-                # htmlDiv(
-                #     "Country:",   
-                #     id="country",                      
-                #     style=list("color" = "black", "font-size" = "12px")
-                #         ),
-                # htmlDiv(
-                #     "Salary:",
-                #     id="salary",                        
-                #     style=list("color" = "black", "font-size" = "12px")
-                #         ),
-                
-                htmlIframe(
-                  style=list(
-                    "border-width" = "0",
-                    "width" = "100%",
-                    "height" = "10vh"
+                    "height" = "40vh"
                   )
                 )
-                
-              ),
-              width=6
+              ), width = 5
             ),
-            
-            
             dbcCol(
+              # Heatmap
               list(
                 htmlH2(" ",                             
-                       style=list("height" = "2vh")
+                       style=list("height" = "3vh")
                 ),
                 dccGraph(
                   id="salary_heatmap",
                   style=list(
                     "border-width" = "0",
                     "width" = "100%",
-                    "height" = "52vh"
+                    "height" = "40vh"
                   )
                 )
-              ),
-              width=5
+              ), width = 6
             )
           )
         ),
         dbcRow(
           list(
             dbcCol(
+              # Boxplot
               list(
                 dccGraph(
                   id="gender-boxplot",
@@ -264,10 +220,10 @@ content = dbcRow(
                     "display" = "block"
                   )
                 )
-              ),
-              width=6
+              ), width = 5
             ),
             dbcCol(
+              # Stacked histogram + widgets
               list(
                 htmlH2("Select a feature to stack by:",                             
                        style=list("color" = "black", "font-size" = "12px")
@@ -281,20 +237,20 @@ content = dbcRow(
                     "height" = "32vh"
                   )
                 )
-              ),
-              width=5
+              ), width = 5
+            ),
+            dbcCol(
+              width = 1
             )
           )
         )
-      )
-    ),
-    
+      ),
+      width = 11),
     dbcCol(
       list(sidebar),
-      width=3
+      width = 3
     )
-  ),
-  style=CONTENT_STYLE
+  ), style = CONTENT_STYLE
 )
 
 # Set layout
@@ -382,17 +338,15 @@ app$callback(
     
     fig2  <- ggplotly(p) 
     
-    
-    
     fig <- subplot(
       fig1,
       fig2,
       nrows = 2, 
-      margin = 0.04,
+      margin = 0.06,
       shareY = TRUE, 
       titleX = TRUE
     ) %>% layout(
-      height=350, 
+      height=400, 
       width=450,
       title = list(text=paste0("Heatmap of ", xcon), font=list(size = 16)),
       yaxis = list(title = 'Salary', font=list(size = 8)), 
@@ -437,13 +391,12 @@ app$callback(
     
     fig <- plot_geo(source)
     fig <- fig %>% add_trace(
-      z = ~Salary_USD, color = ~Salary_USD, colors = 'Blues', height=1200, width=450, scope="north america",
+      z = ~Salary_USD, color = ~Salary_USD, colors = 'Blues', scope="north america",
       text = ~Country, locations = ~CODE, marker = list(line = l)
     ) %>%
       layout(
-        title = 'Median Salary of the World<br>Source: <a href="https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv">Kaggle Dataset</a>',
-        geo = g#,
-        # dragmode = 'select'
+        title = 'Median Salary of the World',
+        geo = g
       )
     
     fig
@@ -501,7 +454,7 @@ app$callback(
     }
     
     ggplotly(p) %>% 
-      layout(legend = list(orientation = "h", x = -0.1, y =-0.6))
+      layout(legend = list(orientation = "h", x = -0.1, y = -0.4))
   }
 )
 
