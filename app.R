@@ -92,9 +92,9 @@ slider <- dccRangeSlider(
 scientist <- dccDropdown(
   id="data_scientist",
   options=list(
-    list("label" = "Yes", "value" = "Yes"),
-    list("label" = "No", "value" = "No"),
-    list("label" = "Sort of", "value" = "Sort of (Explain more)")
+    list("label" = "Data Scientist", "value" = "Yes"),
+    list("label" = "Not Data Scientist", "value" = "No"),
+    list("label" = "Mixed", "value" = "Sort of (Explain more)")
   ),
   value=list("Yes", "No", "Sort of (Explain more)"),
   style=list("font-size" = "12px", "height" = "3vh"),
@@ -137,7 +137,7 @@ sidebar = htmlDiv(
         htmlDiv(
           list(
             htmlH2(
-              "Are you a Data Scientist?",
+              "Type of role",
               style=list("color" = "white", "font-size" = "14px")
             )
             ,
