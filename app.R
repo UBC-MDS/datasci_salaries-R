@@ -339,7 +339,7 @@ app$callback(
       scale_x_continuous(labels = scales::label_number_si())+
       guides(fill=guide_legend(nrow=3,byrow=TRUE))  + 
       theme_bw() +
-      theme(text = element_text(size = 12))
+      theme(text = element_text(size = 10))
     
     ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.2, y = 0.9))
     
@@ -375,7 +375,7 @@ app$callback(
       geom_density(fill="blue", alpha = 0.2) +
       labs(y = "Density") +
       theme_bw() +
-      theme(text = element_text(size = 12))
+      theme(text = element_text(size = 10))
     
     fig2  <- ggplotly(p) 
     
@@ -438,7 +438,7 @@ app$callback(
       text = ~Country, locations = ~CODE, marker = list(line = l)
     ) %>%
       layout(
-        title = 'Median Salary of the World<br>Source:<a href="https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv">Kaggle Dataset</a>',
+        title = 'Median Salary of the World<br>Source: <a href="https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv">Kaggle Dataset</a>',
         geo = g#,
         # dragmode = 'select'
       )
@@ -485,7 +485,7 @@ app$callback(
       scale_x_continuous(labels = scales::label_number_si()) +
       labs(x = "Salary in USD", y = "Counts", fill = "") +
       theme_bw() +
-      theme(text = element_text(size = 12)) +
+      theme(text = element_text(size = 10)) +
       guides(fill=guide_legend(title=""))
     
     if (stack == "Tenure") {
@@ -536,7 +536,7 @@ app$callback(
       coord_flip() +
       theme(legend.position="none") + 
       theme_bw() +
-      theme(text = element_text(size = 12))
+      theme(text = element_text(size = 10))
     
     ggplotly(p) %>% hide_legend()
   }
