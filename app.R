@@ -316,7 +316,7 @@ app$callback(
       theme_bw() +
       theme(text = element_text(size = 10))
     
-    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.3, y = 0.9))
+    ggplotly(points, tooltip = "EmployerIndustry") %>% layout(legend = list(orientation = "v", x = 0.4, y = 0.95))
     
   }
 )
