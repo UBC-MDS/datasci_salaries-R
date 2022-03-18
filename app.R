@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 library(dash)
 library(dashHtmlComponents)
 library(dashBootstrapComponents)
