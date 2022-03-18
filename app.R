@@ -328,7 +328,6 @@ app$callback(
     fig1 <- plot_ly(x = source$Age, y = source$Salary_USD) %>% 
       add_histogram2d(colorscale="YlGnBu", nbinsx=x_bin_num, nbinsy=y_bin_num)
     
-    
     p <- ggplot(source,aes(x=Age)) +
       geom_histogram(aes(y = ..density..), color="blue", fill = "blue", alpha = 0.2) +
       geom_density(fill="blue", alpha = 0.2) +
@@ -349,7 +348,7 @@ app$callback(
       height=400, 
       width=450,
       title = list(text=paste0("Heatmap of ", xcon), font=list(size = 16)),
-      yaxis = list(title = 'Salary', font=list(size = 8)), 
+      yaxis = list(title = 'Salary in USD', font=list(size = 8)), 
       legend = list(title=list(text='Counts'), font=list(size = 8))
     )
     
