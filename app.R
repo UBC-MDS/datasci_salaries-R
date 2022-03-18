@@ -30,6 +30,11 @@ tenure_order <- c(
   "More than 10 years"
 )
 
+remote_order <- c(
+  "Always", "Most of the time",
+  "Sometimes", "Rarely", "Never"
+)
+
 app <- Dash$new(external_stylesheets = dbcThemes$BOOTSTRAP)
 
 # Define section styles
@@ -105,7 +110,9 @@ edu_dropdown <- dccDropdown(
   options = list(list(label = "Formal Education",
                       value = "FormalEducation"),
                  list(label = "Coding Experience", 
-                      value = "Tenure")),
+                      value = "Tenure"),
+                 list(label = "Remote Working Frequency", 
+                      value = "RemoteWork")),
   value="FormalEducation"
 )
 
@@ -425,19 +432,33 @@ app$callback(
     
     p <- filter(p, Age > 0, Salary_USD <= xmax[2], Salary_USD >= xmax[1])
     
+    if (stack == "Tenure") {
+      p <- p %>%
+        tidyr::drop_na(Salary_USD, Tenure) %>%
+        filter(Tenure != "I don't write code to analyze data") %>%
+        mutate(Tenure = factor(Tenure, levels = tenure_order))
+    }
+    else if (stack == "FormalEducation") {
+      p <- p %>%
+        tidyr::drop_na(Salary_USD, FormalEducation) %>%
+        mutate(
+          FormalEducation = case_when(
+            !(FormalEducation %in% education_order) ~ "Less than bachelor's degree",
+            TRUE ~ FormalEducation)) %>%
+        mutate(
+          FormalEducation = factor(
+            FormalEducation, levels = education_order
+          )
+        )
+    }
+    else {
+      p <- p %>%
+        tidyr::drop_na(Salary_USD, RemoteWork) %>%
+        mutate(RemoteWork = factor(RemoteWork, levels = remote_order)) %>%
+        tidyr::drop_na(Salary_USD, RemoteWork)
+    }
+    
     p <- p %>%
-      tidyr::drop_na(Salary_USD, Tenure, FormalEducation) %>%
-      filter(Tenure != "I don't write code to analyze data") %>%
-      mutate(
-        FormalEducation = case_when(
-          !(FormalEducation %in% education_order) ~ "Less than bachelor's degree",
-          TRUE ~ FormalEducation)) %>%
-      mutate(
-        FormalEducation = factor(
-          FormalEducation, levels = education_order
-        ),
-        Tenure = factor(Tenure, levels = tenure_order)
-      ) %>%
       ggplot(aes(x = Salary_USD, fill = !!sym(stack))) +
       geom_histogram(bins = 20, color = "white") +
       scale_x_continuous(labels = scales::label_number_si()) +
@@ -450,9 +471,13 @@ app$callback(
       p <- p +
         labs(fill = "Coding experience") 
     }
-    else {
+    else if (stack == "FormalEducation") {
       p <- p +
         labs(fill = "Formal education level")
+    }
+    else {
+      p <- p +
+        labs(fill = "Remote work")
     }
     
     ggplotly(p) %>% 
