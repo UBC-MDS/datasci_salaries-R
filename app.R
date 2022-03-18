@@ -120,7 +120,11 @@ topbar = htmlDiv(
           list(
             htmlH2(
               "Data Science Salaries Dashboard",
-              style = TOPBAR_STYLE
+              style = list(
+                "color" = "white",
+                "font-size" = "20px",
+                "text-align" = "center"
+              )
             )
           )
         )
